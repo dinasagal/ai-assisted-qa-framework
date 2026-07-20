@@ -27,3 +27,24 @@ class GithubApi:
             "/user/repos",
             body
         )
+    
+    def get_repository(self, owner, repo):
+
+        return self.client.get(f"/repos/{owner}/{repo}")
+    
+    def update_repository(self, owner, repo, new_description):
+
+        body = {
+            "description": new_description
+        }
+
+        return self.client.patch(
+            f"/repos/{owner}/{repo}",
+            body
+        )
+    
+    def delete_repository(self, owner, repo):
+
+        return self.client.delete(
+            f"/repos/{owner}/{repo}"
+        )

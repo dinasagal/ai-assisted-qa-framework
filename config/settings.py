@@ -5,6 +5,7 @@ load_dotenv()
 
 BASE_URL: str = os.getenv("BASE_URL", "http://localhost:8080")
 GITHUB_API = os.getenv("GITHUB_API")
+GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 ADMIN_USER: str = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "admin")

@@ -19,6 +19,13 @@ class ApiClient:
             headers=self.headers,
             json=json,
         )
+    
+    def patch(self, endpoint, json):
+        return requests.patch(
+            f"{self.base_url}{endpoint}",
+            headers=self.headers,
+            json=json,
+        )
 
     def put(self, endpoint, json):
         return requests.put(
