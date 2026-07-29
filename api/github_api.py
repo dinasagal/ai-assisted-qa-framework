@@ -3,7 +3,7 @@ from config.settings import GITHUB_API, GITHUB_TOKEN
 
 
 class GithubApi:
-
+    
     def __init__(self):
 
         headers = {
@@ -16,19 +16,26 @@ class GithubApi:
             headers=headers
         )
 
-    def create_repository(self, repo_name):
+    def create_repository(
+        self,
+        repo_name,
+        private=False,
+        description=None,
+        **kwargs,
+    ):
 
         body = {
             "name": repo_name,
-            "private": False
+            "private": private,
+            "description": description
         }
 
         return self.client.post(
             "/user/repos",
             body
         )
-    
     def get_repository(self, owner, repo):
+        """Get a repository by owner and repo name."""
 
         return self.client.get(f"/repos/{owner}/{repo}")
     
