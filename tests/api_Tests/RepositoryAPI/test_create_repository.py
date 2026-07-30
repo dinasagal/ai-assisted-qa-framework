@@ -4,7 +4,7 @@ import json
 import pytest
 from api.api_client import ApiClient
 from config.settings import GITHUB_API, GITHUB_USERNAME
-from tests.api_Tests.conftest import delete_repository
+from tests.api_Tests.conftest import created_repositories
 
 OWNER = GITHUB_USERNAME
 
@@ -38,11 +38,11 @@ def _assert_repository_response(response, expected_name, *, expected_private, ex
         (False, "Create public repository"),
     ],
 )
-def test_create_repository_visibility(github_api, delete_repository, private, title):
+def test_create_repository_visibility(github_api, created_repositories, private, title):
     allure.dynamic.title(title)
 
     repo_name = _repo_name()
-    delete_repository.append(repo_name)
+    created_repositories.append(repo_name)
 
     with allure.step("Create repository"):
         response = github_api.create_repository(repo_name, private=private)
@@ -57,9 +57,9 @@ def test_create_repository_visibility(github_api, delete_repository, private, ti
 @allure.epic("Repository API")
 @allure.feature("Create Repository")
 @allure.title("Create repository with description")
-def test_create_repository_with_description(github_api, delete_repository):
+def test_create_repository_with_description(github_api, created_repositories):
     repo_name = _repo_name()
-    delete_repository.append(repo_name)
+    created_repositories.append(repo_name)
     description = "This is a test repository created via API."
     
     with allure.step("Create repository with description"):
@@ -84,9 +84,9 @@ def test_create_repository_with_description(github_api, delete_repository):
 @allure.epic("Repository API")
 @allure.feature("Create Repository")
 @allure.title("Create repository with duplicate name")
-def test_create_repository_with_duplicate_name(github_api, delete_repository):
+def test_create_repository_with_duplicate_name(github_api, created_repositories):
     repo_name = _repo_name()
-    delete_repository.append(repo_name)
+    created_repositories.append(repo_name)
 
     with allure.step("Create repository"):
         response1 = github_api.create_repository(repo_name, private=True)
@@ -145,7 +145,7 @@ def test_create_repository_with_invalid_characters(github_api):
 @allure.epic("Repository API")
 @allure.feature("Create Repository")
 @allure.title("Create repository using invalid token")
-def test_create_repository_with_invalid_token(github_api, delete_repository):
+def test_create_repository_with_invalid_token(github_api, created_repositories):
     with allure.step("Attempt to create repository using invalid token"):
         headers = {
                     "Authorization": f"Bearer {"ghpp_FsoqaLXGSvEoPNGRHz3QxzkT2su4gRdGW"}",
