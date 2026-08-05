@@ -15,7 +15,7 @@ from config.settings import BASE_URL, HEADLESS, SLOW_MO, DEFAULT_TIMEOUT
 def browser_instance():
     """Launch a single browser for the entire test session."""
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=HEADLESS, slow_mo=SLOW_MO)
+        browser = pw.chromium.launch(headless=False, slow_mo=SLOW_MO)
         yield browser
         browser.close()
 
