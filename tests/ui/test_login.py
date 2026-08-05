@@ -4,8 +4,10 @@ import pytest
 import allure
 from playwright.sync_api import Page
 
+from pages.logout_page import LogoutPage
 from pages.login_page import LoginPage
 from config.settings import ADMIN_USER, ADMIN_PASSWORD
+from pages.main_page import MainPage
 
 
 @allure.epic("Authentication")
@@ -49,6 +51,29 @@ class TestLogin:
         login_page = LoginPage(page, base_url)
         login_page.open()
         login_page.login_with_invalid_username("invalid_user")
-        
 
-    
+    @allure.story("Successful login")
+    @allure.title("Admin can log in with valid credentials")
+    def test_login_success2(self, page: Page, base_url: str) -> None:
+        login_page = LoginPage(page, base_url)
+        login_page.open()
+        login_page.login(ADMIN_USER, ADMIN_PASSWORD)
+        login_page.expect_logged_in()
+
+             
+    @allure.story("Successful login and logout")
+    @allure.title("Admin can log in and log out successfully")
+    def test_login_and_logout(self, page: Page, base_url: str) -> None:
+        with allure.step("Log in as admin"):
+            login_page = LoginPage(page, base_url)
+            login_page.open()
+            login_page.login(ADMIN_USER, ADMIN_PASSWORD)
+            login_page.expect_logged_in()
+        with allure.step("Log out via main page"):
+            main_page = MainPage(page, base_url)
+            main_page.logout()
+        with allure.step("Confirm logout on logout page"):
+            logout_page = LogoutPage(page, base_url)
+            logout_page.confirm_logout()
+            logout_page.verify_logged_out()
+        

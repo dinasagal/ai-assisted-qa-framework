@@ -38,5 +38,7 @@ class LoginPage(BasePage):
             expect(self.error_message).to_be_visible()
 
     def expect_logged_in(self) -> None:
-        with allure.step("Expect successful login (redirected away from /login)"):
-            expect(self.page).not_to_have_url(f"{self.base_url}/{self.PATH}")
+        with allure.step("Expect successful login (redirected away from /login to https://github.com/)"):
+            github_url= self.base_url+'/'
+            print(f"Expected URL: {github_url}")
+            expect(self.page).to_have_url(github_url)
