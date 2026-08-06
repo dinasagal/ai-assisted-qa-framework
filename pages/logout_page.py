@@ -22,21 +22,21 @@ class LogoutPage(BasePage):
     @allure.step("Log out from GitHub")
     def verify_logout_page_loaded(self) -> None:
         """Verify the logout confirmation page is displayed."""
-        expect(self.page_title).to_be_visible()
-        expect(self.sign_out_button).to_be_visible()
+        self.expect_visible(self.page_title)
+        self.expect_visible(self.sign_out_button)
 
 
     @allure.step("Confirm logout")
     def confirm_logout(self) -> None:
         """Confirm logout."""
-        self.sign_out_button.click()
+        self.click(self.sign_out_button)
 
     @allure.step("Cancel logout")
     def cancel_logout(self) -> None:
         """Cancel logout."""
-        self.cancel_button.click()
+        self.click(self.cancel_button)
 
     @allure.step("Verify logged out")
     def verify_logged_out(self) -> None:
         """Verify the user has been logged out."""
-        expect(self.login_button).to_be_visible()
+        self.expect_visible(self.login_button)

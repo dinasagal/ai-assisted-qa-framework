@@ -4,6 +4,7 @@ import allure
 
 from playwright.sync_api import Page, expect
 
+from config.settings import GITHUB_USERNAME
 from pages.base_page import BasePage
 
 
@@ -15,6 +16,7 @@ class MainPage(BasePage):
 
         # Header
         self.profile_menu = page.locator("button[data-login]")
+        self.username_label = page.locator(f"div[title='{GITHUB_USERNAME}']")
         self.sign_out_button = page.get_by_role("link", name="Sign out")
 
         # Repositories
@@ -46,16 +48,18 @@ class MainPage(BasePage):
     @allure.step("Verify repository {repository_name} exists")
     def verify_repository_exists(self, repository_name: str) -> None:
         """Verify that a repository is displayed."""
-        expect(
+        self.expect_visible(
             self.page.get_by_role("link", name=repository_name)
-        ).to_be_visible()
+        )
 
     @allure.step("Verify user is logged in")
     def verify_logged_in(self) -> None:
         """Verify that the user is logged in."""
-        expect(self.profile_menu).to_be_visible()
+        self.expect_visible(self.profile_menu)
 
-    @allure.step("Verify user is logged out")
-    def verify_logged_out(self) -> None:
-        """Verify that the user is logged out."""
-        expect(self.page.get_by_role("link", name="Sign in")).to_be_visible()
+    @allure.step("Verify user name is correct")
+    def verify_user_name(self) -> None:
+        """Verify that the logged-in user's name is correct."""
+        self.click(self.profile_menu)
+        self.expect_visible(self.username_label)
+

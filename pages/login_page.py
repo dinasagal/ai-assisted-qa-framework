@@ -22,6 +22,12 @@ class LoginPage(BasePage):
         self.navigate(self.PATH)
         return self
 
+    @allure.step("Expect login button to be visible")
+    def expect_login_btn_visible(self) -> None:
+        """Expect the login button to be visible."""
+        self.expect_visible(self.login_button)
+  
+
     @allure.step("Log in as {username}")
     def login(self, username: str, password: str) -> None:
         self.fill(self.username_input, username)
@@ -33,12 +39,11 @@ class LoginPage(BasePage):
         self.fill(self.username_input, username)
         assert self.password_input.is_disabled()
 
+    @allure.step("Expect login error message")
     def expect_login_error(self) -> None:
-        with allure.step("Expect login error message"):
-            expect(self.error_message).to_be_visible()
+        self.expect_visible(self.error_message)
 
+    @allure.step("Expect successful login (redirected away from /login to https://github.com/)")
     def expect_logged_in(self) -> None:
-        with allure.step("Expect successful login (redirected away from /login to https://github.com/)"):
-            github_url= self.base_url+'/'
-            print(f"Expected URL: {github_url}")
-            expect(self.page).to_have_url(github_url)
+        #github_url = self.base_url + '/'
+        self.expect_url("")  # Expect the base URL after successful login

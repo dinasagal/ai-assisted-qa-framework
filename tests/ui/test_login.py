@@ -19,15 +19,20 @@ class TestLogin:
     def test_login_page_accessible(self, page: Page, base_url: str) -> None:
         login_page = LoginPage(page, base_url)
         login_page.open()
-        login_page.expect_visible(login_page.login_button)
+        login_page.expect_login_btn_visible()
 
     @allure.story("Successful login")
     @allure.title("Admin can log in with valid credentials")
     def test_login_success(self, page: Page, base_url: str) -> None:
-        login_page = LoginPage(page, base_url)
-        login_page.open()
-        login_page.login(ADMIN_USER, ADMIN_PASSWORD)
-        login_page.expect_logged_in()
+        with allure.step("Log in with user name and password"):
+            login_page = LoginPage(page, base_url)
+            login_page.open()
+            login_page.login(ADMIN_USER, ADMIN_PASSWORD)
+            login_page.expect_logged_in()
+        with allure.step("Verify user is logged in and user name is correct"):
+            main_page = MainPage(page, base_url)
+            main_page.verify_logged_in()
+            main_page.verify_user_name()
 
     @allure.story("Failed login")
     @allure.title("Login fails with wrong password")
@@ -71,6 +76,7 @@ class TestLogin:
             login_page.expect_logged_in()
         with allure.step("Log out via main page"):
             main_page = MainPage(page, base_url)
+            main_page.verify_logged_in()
             main_page.logout()
         with allure.step("Confirm logout on logout page"):
             logout_page = LogoutPage(page, base_url)

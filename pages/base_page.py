@@ -46,7 +46,7 @@ class BasePage:
             expect(self.page).to_have_url(expected)
 
     def expect_visible(self, locator: Locator) -> None:
-        with allure.step(f"Expect element visible"):
+        with allure.step(f"Expect element: {locator} visible"):
             expect(locator).to_be_visible()
 
     # ------------------------------------------------------------------ #
