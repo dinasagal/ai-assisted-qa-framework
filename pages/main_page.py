@@ -38,8 +38,10 @@ class MainPage(BasePage):
     @allure.step("Log out from GitHub")
     def logout(self) -> None:
         """Log out from GitHub."""
-        self.profile_menu.click()
-        self.sign_out_button.click()
+        self.click(self.profile_menu)
+        self.click(self.sign_out_button)
+
+        # self.sign_out_button.click()
 
     @allure.step("Verify repository {repository_name} exists")
     def verify_repository_exists(self, repository_name: str) -> None:
