@@ -5,6 +5,7 @@ import pytest
 from api.api_client import ApiClient
 from config.settings import GITHUB_API, GITHUB_USERNAME
 from tests.api_Tests.conftest import created_repositories
+from utils.assertions_api import assert_json_value, assert_status_code
 
 OWNER = GITHUB_USERNAME
 
@@ -12,16 +13,16 @@ def _repo_name() -> str:
     return f"automation-{uuid.uuid4().hex[:8]}"
 
 def _assert_repository_response(response, expected_name, *, expected_private, expected_description=None):
-    assert response.status_code == 201
+    assert_status_code(response.status_code, 201)
 
     body = response.json()
-    assert body["name"] == expected_name
-    assert body["private"] is expected_private
-    assert body["owner"]["login"] == OWNER
-    assert body["full_name"] == f"{OWNER}/{expected_name}"
+    assert_json_value(body, "name", expected_name)
+    assert_json_value(body, "private", expected_private)
+    assert_json_value(body, "owner.login", OWNER)
+    assert_json_value(body, "full_name", f"{OWNER}/{expected_name}")
 
     if expected_description is not None:
-        assert body["description"] == expected_description
+        assert_json_value(body, "description", expected_description)
 
     allure.attach(
         json.dumps(body, indent=2),
@@ -98,7 +99,7 @@ def test_create_repository_with_duplicate_name(github_api, created_repositories)
 
     with allure.step("Attempt to create repository with duplicate name"):
         response2 = github_api.create_repository(repo_name, private=True)
-        assert response2.status_code == 422
+        assert_status_code(response2.status_code, 422)
         body = response2.json()
         assert "errors" in body
         assert any(error.get("message") == "name already exists on this account" for error in body["errors"])
@@ -115,33 +116,57 @@ def test_create_repository_with_duplicate_name(github_api, created_repositories)
 def test_create_repository_without_name(github_api):
     with allure.step("Attempt to create repository without name"):
         response = github_api.create_repository("", private=True)
-        assert response.status_code == 422
-        body = response.json()
-        assert "errors" in body
-        assert any(error.get("message") == "name can't be blank" for error in body["errors"])
+        assert(response.status_code == 422)
 
+    with allure.step("Validate response for repository without name"):
+        body = response.json()
         allure.attach(
-            json.dumps(body, indent=2),
-            name="Response Body for Repository Without Name",
-            attachment_type=allure.attachment_type.JSON,
-        )
+                json.dumps(body, indent=2),
+                name="Response Body",
+                attachment_type=allure.attachment_type.JSON,
+            )
+        with allure.step("Verify error message"):
+            assert body["message"] == "New repository name must not be blank"
+            assert body["status"] == "422"
+
+        with allure.step("Verify missing name validation error"):
+            errors = body["errors"]
+
+            assert {
+                "resource": "Repository",
+                "field": "name",
+                "code": "missing_field",
+            } in errors
+
+        with allure.step("Verify minimum length validation error"):
+            assert {
+                "resource": "Repository",
+                "field": "name",
+                "code": "custom",
+                "message": "name is too short (minimum is 1 character)",
+            } in errors
+        
+        
+
+
+
+
 @allure.epic("Repository API")
 @allure.feature("Create Repository")
 @allure.title("Create repository with invalid characters in name")
 def test_create_repository_with_invalid_characters(github_api):
-    invalid_repo_name = "invalid/repo?name"
+    invalid_repo_name = "invalid/repo?name" #invalid-repo-name
     with allure.step("Attempt to create repository with invalid characters in name"):
         response = github_api.create_repository(invalid_repo_name, private=True)
-        assert response.status_code == 422
-        body = response.json()
-        assert "errors" in body
-        assert any(error.get("message") == "name is invalid" for error in body["errors"])
+        assert_status_code(response.status_code, 201)
+        with allure.step("Validate repository"):
+                _assert_repository_response(
+                    response,
+                    "invalid-repo-name",
+                    expected_private=True,
+                )
 
-        allure.attach(
-            json.dumps(body, indent=2),
-            name="Response Body for Repository With Invalid Characters",
-            attachment_type=allure.attachment_type.JSON,
-        )
+
 @allure.epic("Repository API")
 @allure.feature("Create Repository")
 @allure.title("Create repository using invalid token")
@@ -169,7 +194,7 @@ def test_create_repository_with_invalid_token(github_api, created_repositories):
                 )
 
 
-        assert response.status_code == 401
+        assert_status_code(response.status_code, 401)
         body = response.json()
         allure.attach(
                     json.dumps(body, indent=2),
