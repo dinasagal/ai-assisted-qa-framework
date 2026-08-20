@@ -1,6 +1,6 @@
 # ai-assisted-qa-framework
 
-AI-assisted QA framework for the **OpenProject** SaaS application, built with:
+AI-assisted QA framework for UI and API testing:
 
 - **Playwright** — browser automation
 - **Pytest** — test execution
@@ -12,27 +12,42 @@ AI-assisted QA framework for the **OpenProject** SaaS application, built with:
 
 ## Project structure
 
-```
+├── api/
+│ ├── api_client.py 
+│ └── github_api.py 
 ├── config/
-│   └── settings.py          # Base URL, credentials, timeouts (env-configurable)
+│ └── settings.py 
 ├── pages/
-│   ├── base_page.py          # BasePage with shared Playwright helpers
-│   ├── login_page.py
-│   ├── projects_page.py
-│   └── work_packages_page.py
+│ ├── base_page.py 
+│ ├── login_page.py
+│ ├── logout_page.py
+│ └── main_page.py
 ├── flows/
-│   ├── auth_flows.py         # login_as_admin(), login_as()
-│   └── project_flows.py      # create_project(), create_work_package()
+│ ├── auth_flows.py
+│ ├── project_flows.py 
+│ └── api/
+│ └── api_flowes.py 
+├── utils/
+│ └── assertions_api.py 
+├── ai_agent/
+│ ├── generated_test_plans.txt
+│ └── test_plan_generator.md
 ├── tests/
-│   ├── test_login.py
-│   └── test_projects.py
-├── conftest.py               # browser/context/page fixtures + failure screenshots
+│ ├── ui/
+│ │ ├── conftest.py
+│ │ └── test_login.py
+│ └── api_Tests/
+│ ├── conftest.py
+│ ├── test_crud_repository.py
+│ └── RepositoryAPI/
+│ ├── test_create_repository.py
+│ └── test_get_repository.py
+├── conftest.py 
 ├── pytest.ini
 ├── requirements.txt
 └── .env.example
 ```
 
----
 
 ## Setup
 
