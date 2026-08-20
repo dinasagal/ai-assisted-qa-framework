@@ -11,7 +11,7 @@ AI-assisted QA framework for UI and API testing:
 ---
 
 ## Project structure
-
+```
 ├── api/
 │ ├── api_client.py 
 │ └── github_api.py 
