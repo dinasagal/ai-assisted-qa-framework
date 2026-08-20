@@ -14,13 +14,22 @@ class MainPage(BasePage):
     def __init__(self, page: Page, base_url: str) -> None:
         super().__init__(page, base_url)
 
-        # Header
-        self.profile_menu = page.locator("button[data-login]")
-        self.username_label = page.locator(f"div[title='{GITHUB_USERNAME}']")
+        # Exact avatar trigger used by logged-in header
+        self.profile_menu = page.locator(
+            "button[data-login][aria-haspopup='menu']:has(img[data-testid='github-avatar'])"
+        ).first
+
+        
+
+        # Menu action used as open-state proof
         self.sign_out_button = page.get_by_role("link", name="Sign out")
 
         # Repositories
         self.repositories_tab = page.get_by_role("link", name="Repositories")
+
+        # Username heading shown inside the open user menu
+        self.username_heading = page.get_by_role("heading", name=GITHUB_USERNAME)
+
 
     @allure.step("Open GitHub main page")
     def open(self) -> None:
@@ -37,13 +46,21 @@ class MainPage(BasePage):
         """Open a repository from the repositories list."""
         self.page.get_by_role("link", name=repository_name).click()
 
+    @allure.step("Open user menu")
+    def open_user_menu(self) -> None:
+        """Open user menu from avatar button."""
+        expect(self.profile_menu).to_be_visible(timeout=10000)
+        self.profile_menu.scroll_into_view_if_needed()
+        self.profile_menu.click(timeout=10000)
+        expect(self.sign_out_button).to_be_visible(timeout=10000)
+        
+
+
     @allure.step("Log out from GitHub")
     def logout(self) -> None:
         """Log out from GitHub."""
-        self.click(self.profile_menu)
-        self.click(self.sign_out_button)
-
-        # self.sign_out_button.click()
+        expect(self.sign_out_button).to_be_visible(timeout=10000)
+        self.sign_out_button.click()
 
     @allure.step("Verify repository {repository_name} exists")
     def verify_repository_exists(self, repository_name: str) -> None:
@@ -59,7 +76,8 @@ class MainPage(BasePage):
 
     @allure.step("Verify user name is correct")
     def verify_user_name(self) -> None:
-        """Verify that the logged-in user's name is correct."""
-        self.click(self.profile_menu)
-        self.expect_visible(self.username_label)
+        """Verify that user menu opens and account actions are visible."""
+        self.open_user_menu()
+        with allure.step(f"Expect element: {self.username_heading} visible"):
+            expect(self.username_heading).to_be_visible(timeout=10000)
 
