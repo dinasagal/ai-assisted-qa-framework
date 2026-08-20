@@ -1,6 +1,6 @@
 # ai-assisted-qa-framework
 
-AI-assisted QA framework for the **OpenProject** SaaS application, built with:
+AI-assisted QA framework for UI and API testing:
 
 - **Playwright** — browser automation
 - **Pytest** — test execution
