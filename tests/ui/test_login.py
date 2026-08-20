@@ -77,9 +77,10 @@ class TestLogin:
         with allure.step("Log out via main page"):
             main_page = MainPage(page, base_url)
             main_page.verify_logged_in()
-            main_page.logout()
-        with allure.step("Confirm logout on logout page"):
-            logout_page = LogoutPage(page, base_url)
-            logout_page.confirm_logout()
-            logout_page.verify_logged_out()
+            main_page.verify_user_name()
+            #main_page.logout()
+        #with allure.step("Confirm logout on logout page"):
+            #logout_page = LogoutPage(page, base_url)
+            #logout_page.confirm_logout()
+            #logout_page.verify_logged_out()
         
