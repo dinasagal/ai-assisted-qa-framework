@@ -20,11 +20,12 @@ class ApiClient:
             json=json,
         )
     
-    def patch(self, endpoint, json):
+    def patch(self, endpoint, json, allow_redirects=True):
         return requests.patch(
             f"{self.base_url}{endpoint}",
             headers=self.headers,
             json=json,
+            allow_redirects=allow_redirects,
         )
 
     def put(self, endpoint, json):
