@@ -207,6 +207,9 @@ tempCodeRunnerFile.py
 allure-results/
 allure-report/
 
+# AI test execution reports (generated per run by the Test Execution Agent)
+ai_agent/generated_execution_reports/
+
 # Ruff stuff:
 .ruff_cache/
 
