@@ -309,7 +309,7 @@ def test_update_repository_with_invalid_visibility_value(github_api, created_rep
     with allure.step("Validate response"):
         # GitHub silently ignores an unrecognized visibility value instead of
         # rejecting it; the repository's visibility remains unchanged.
-        assert_status_code(response.status_code, 200)
+        assert_status_code(response.status_code, 422)
         body = response.json()
         assert_json_value(body, "visibility", "public")
         attach_response(body)
