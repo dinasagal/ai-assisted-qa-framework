@@ -1,97 +1,201 @@
-# ai-assisted-qa-framework
+# AI-Assisted QA Automation Framework
 
-AI-assisted QA framework for UI and API testing:
+A Python-based QA automation project that combines **UI and API test automation** with an **AI-assisted workflow for test planning and test implementation**.
 
-- **Playwright** — browser automation
-- **Pytest** — test execution
-- **Allure** — rich HTML reporting
-- **Page Object Model (POM)** — maintainable page layer
-- **Reusable flows** — composable multi-step test helpers
+The project explores a structured approach to using AI in QA:
 
----
+```text
+Feature
+   ↓
+AI Test Plan Agent
+   ↓
+Structured QA Test Plan
+   ↓
+AI Test Implementation Agent
+   ↓
+Runnable Automated Tests
+```
 
-## Project structure
+## What This Project Demonstrates
 
-├── api/
-│ ├── api_client.py 
-│ └── github_api.py 
-├── config/
-│ └── settings.py 
-├── pages/
-│ ├── base_page.py 
-│ ├── login_page.py
-│ ├── logout_page.py
-│ └── main_page.py
-├── flows/
-│ ├── auth_flows.py
-│ ├── project_flows.py 
-│ └── api/
-│ └── api_flowes.py 
-├── utils/
-│ └── assertions_api.py 
-├── ai_agent/
-│ ├── generated_test_plans.txt
-│ └── test_plan_generator.md
+* UI automation with Playwright
+* API testing with Python and Pytest
+* Page Object Model for UI test organization
+* Reusable flows and fixtures
+* API client abstraction
+* Test setup and cleanup
+* Allure reporting
+* AI-assisted test planning
+* AI-assisted test implementation
+
+## AI-Assisted Test Workflow
+
+### 1. Test Plan Agent
+
+The Test Plan Agent receives a feature or requirement and creates a structured QA test plan.
+
+It is designed to:
+
+* Research the relevant official GitHub API documentation
+* Identify relevant positive, negative, boundary, validation, authorization, and error scenarios
+* Avoid inventing undocumented API behavior
+* Flag unclear behavior for clarification
+* Produce a structured test plan independent of the automation framework
+
+The generated plan is stored in:
+
+```text
+ai_agent/generated_ai_test_plans.md
+```
+
+### 2. Test Implementation Agent
+
+The Test Implementation Agent takes an existing feature from the generated test plan and implements it inside the existing automation framework.
+
+It:
+
+* Reads the test plan as the source of truth
+* Inspects the existing framework before implementation
+* Reuses existing fixtures, API clients, helpers, and flows
+* Extends framework components when required
+* Adds appropriate Pytest and Allure metadata
+* Separates AI-generated tests using the `ai_test` marker
+* Runs `pytest --collect-only` to validate that generated tests can be collected
+
+The goal is to move from:
+
+**Feature → Test Plan → Automated Test Code**
+
+while keeping the generated code consistent with the existing framework.
+
+## Framework Architecture
+
+```text
+ai_agent/
+│
+├── Test Plan Agent
+│       ↓
+│   generated_ai_test_plans.md
+│       ↓
+└── Test Implementation Agent
+        ↓
+        ├── API Tests
+        ├── API Client
+        ├── Fixtures
+        └── Assertion Helpers
+
+
+UI Tests
+    ↓
+Page Objects
+    ↓
+Reusable Flows
+    ↓
+Playwright
+
+
+API Tests
+    ↓
+GitHub API Wrapper
+    ↓
+Reusable Fixtures
+    ↓
+Assertion Helpers
+```
+
+## Tech Stack
+
+* **Python**
+* **Pytest**
+* **Playwright**
+* **GitHub REST API**
+* **Allure**
+* **python-dotenv**
+
+## Example API Test Coverage
+
+The project currently includes GitHub Repository API testing.
+
+Examples include:
+
+* Create a repository
+* Retrieve and verify a repository
+* Update repository data
+* Verify the update
+* Delete the repository
+* Verify deletion
+
+Tests use reusable API methods and fixtures for setup and cleanup rather than placing all request logic directly inside test cases.
+
+## Project Structure
+
+```text
+ai-assisted-qa-framework/
+│
+├── ai_agent/        # AI test planning and implementation agents
+├── api/             # API client and GitHub API wrapper
+├── config/          # Environment configuration
+├── flows/           # Reusable UI and API flows
+├── pages/           # Playwright Page Objects
 ├── tests/
-│ ├── ui/
-│ │ ├── conftest.py
-│ │ └── test_login.py
-│ └── api_Tests/
-│ ├── conftest.py
-│ ├── test_crud_repository.py
-│ └── RepositoryAPI/
-│ ├── test_create_repository.py
-│ └── test_get_repository.py
-├── conftest.py 
+│   ├── ui/          # UI tests
+│   └── api_Tests/   # API tests
+├── utils/           # Reusable assertion helpers
+│
+├── conftest.py
 ├── pytest.ini
-├── requirements.txt
-└── .env.example
+└── requirements.txt
 ```
 
-
-## Setup
+## Running the Project
 
 ```bash
-# 1. Create and activate a virtual environment
+git clone https://github.com/dinasagal/ai-assisted-qa-framework.git
+cd ai-assisted-qa-framework
+
 python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+```
 
-# 2. Install dependencies
+Activate the environment and install dependencies:
+
+```bash
 pip install -r requirements.txt
-
-# 3. Install Playwright browsers
 playwright install chromium
+```
 
-# 4. Configure the target environment
+Create your environment configuration:
+
+```bash
 cp .env.example .env
-# Edit .env with your OpenProject URL and credentials
 ```
 
----
-
-## Running tests
+Run the tests:
 
 ```bash
-# Run all tests (headless, results written to allure-results/)
 pytest
-
-# Run a specific file
-pytest tests/test_login.py
-
-# Run headed (visible browser)
-HEADLESS=false pytest
-
-# Run against a different environment
-BASE_URL=https://your-openproject.example.com pytest
 ```
 
----
-
-## Allure reports
+Run AI-generated API tests:
 
 ```bash
-# Generate and open the HTML report
+pytest -m ai_test
+```
+
+View Allure results:
+
+```bash
 allure serve allure-results
 ```
 
-> Requires the [Allure CLI](https://docs.qameta.io/allure/#_installing_a_commandline) to be installed.
+## About This Project
+
+I built this project to explore how AI can support the QA automation lifecycle without separating AI-generated tests from good automation practices.
+
+The focus is on combining **QA test design, reusable automation architecture, and AI-assisted implementation** in a single workflow.
+
+## Author
+
+**Dina Rozenblat**
+QA Automation Engineer
+
+Python • Playwright • Pytest • API Testing • Allure • AI-Assisted QA
