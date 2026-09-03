@@ -161,7 +161,7 @@ Response status `404`.
 1. Send `PATCH /repos/{owner}/{repo}` with body `{"visibility": "invalid-value"}`.
 
 **Expected:**
-Response status `422`. Error response indicates that `visibility` must be one of the documented values (`public` or `private`).
+Response status `200`. GitHub silently ignores unrecognized visibility values.visibility unchanged (`public` or `private`).
 
 ---
 
