@@ -1,6 +1,6 @@
 # AI-Assisted QA Automation Framework
 
-A Python-based QA automation project that combines **UI and API test automation** with an **AI-assisted workflow for test planning and test implementation**.
+A Python-based QA automation project that combines **UI and API test automation** with an **AI-assisted workflow for test planning, test implementation, and test execution/analysis**.
 
 The project explores a structured approach to using AI in QA:
 
@@ -14,6 +14,10 @@ Structured QA Test Plan
 AI Test Implementation Agent
    ↓
 Runnable Automated Tests
+   ↓
+AI Test Execution & Analysis Agent
+   ↓
+Execution Report (pass/fail triage, root cause, proposed fixes)
 ```
 
 ## What This Project Demonstrates
@@ -27,6 +31,7 @@ Runnable Automated Tests
 * Allure reporting
 * AI-assisted test planning
 * AI-assisted test implementation
+* AI-assisted test execution and failure analysis
 
 ## AI-Assisted Test Workflow
 
@@ -68,6 +73,27 @@ The goal is to move from:
 
 while keeping the generated code consistent with the existing framework.
 
+### 3. Test Execution & Analysis Agent
+
+The Test Execution & Analysis Agent runs an already-implemented feature's automated tests and triages the results. It is **read-only with respect to code** — it never edits tests, framework code, or application code, and never applies a fix itself; it only investigates and proposes one.
+
+It:
+
+* Resolves a feature name to its test file (same convention as the Implementation Agent) and runs only that feature's tests, not the full suite
+* Collects execution evidence per test: outcome, HTTP status/response body, stack trace, and Allure data
+* Investigates every failure (request/response, docs, framework behavior, test data, git history) before classifying — never classifies from the assertion message alone
+* Classifies each failure into exactly one category: `BUG_IN_TEST`, `BUG_IN_FEATURE`, `ENVIRONMENT_ISSUE`, `TEST_DATA_ISSUE`, `INFRASTRUCTURE_ISSUE`, or `REQUIRES_CLARIFICATION`
+* For `BUG_IN_TEST`, traces the problematic change via `git log`/`git blame` and reports commit evidence (no invented PR/branch references) plus a recommended (not applied) fix
+* For `BUG_IN_FEATURE`, produces a defect report (expected/actual/repro/evidence/severity) instead of altering the test
+* Builds a traceability table: Test Plan entry → Implemented Test → Execution Result → Classification
+* Writes a full report per run to `ai_agent/generated_execution_reports/<feature>_execution_report_<timestamp>.md` (git-ignored, local artifact)
+
+The goal is to move from:
+
+**Automated Test Code → Execution → Classified, Actionable Results**
+
+closing the loop from requirement to a triaged, explainable test run.
+
 ## Framework Architecture
 
 ```text
@@ -77,12 +103,16 @@ ai_agent/
 │       ↓
 │   generated_ai_test_plans.md
 │       ↓
-└── Test Implementation Agent
+├── Test Implementation Agent
+│       ↓
+│       ├── API Tests
+│       ├── API Client
+│       ├── Fixtures
+│       └── Assertion Helpers
+│       ↓
+└── Test Execution & Analysis Agent
         ↓
-        ├── API Tests
-        ├── API Client
-        ├── Fixtures
-        └── Assertion Helpers
+        generated_execution_reports/<feature>_execution_report_<timestamp>.md
 
 
 UI Tests
